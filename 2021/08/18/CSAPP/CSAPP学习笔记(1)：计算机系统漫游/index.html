@@ -1,0 +1,436 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CSAPP学习笔记(1)：计算机系统漫游 | Jerry Mu的客栈</title><meta name="keywords" content="CSAPP,计算机系统"><meta name="author" content="Jerry Mu"><meta name="copyright" content="Jerry Mu"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="计算机系统是由硬件和系统软件组成的，它们共同工作来运行应用程序。我们通过跟踪hello程序的生命周期——创建、运行、输出、终止，来开始对系统的学习。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP学习笔记(1)：计算机系统漫游">
+<meta property="og:url" content="http://mulinjie.top/2021/08/18/CSAPP/CSAPP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/index.html">
+<meta property="og:site_name" content="Jerry Mu的客栈">
+<meta property="og:description" content="计算机系统是由硬件和系统软件组成的，它们共同工作来运行应用程序。我们通过跟踪hello程序的生命周期——创建、运行、输出、终止，来开始对系统的学习。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gtkanombmnj60k00g676i02.jpg">
+<meta property="article:published_time" content="2021-08-17T17:19:19.000Z">
+<meta property="article:modified_time" content="2021-08-17T17:19:19.000Z">
+<meta property="article:author" content="Jerry Mu">
+<meta property="article:tag" content="CSAPP">
+<meta property="article:tag" content="计算机系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008i3skNly1gtkanombmnj60k00g676i02.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://mulinjie.top/2021/08/18/CSAPP/CSAPP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8cedef4e1a024111a5d40336401be9fe";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":175},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Jerry Mu","link":"链接: ","source":"来源: Jerry Mu的客栈","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'mediumZoom',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"top-center"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CSAPP学习笔记(1)：计算机系统漫游',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-08-18 01:19:19'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const fontSizeVal = saveToLocal.get('global-font-size')
+    if (fontSizeVal !== undefined) {
+      document.documentElement.style.setProperty('--global-font-size', fontSizeVal + 'px')
+    }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"  media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/change.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.1.6/css/swiper.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-butterfly-swiper/lib/swiperstyle.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" media="print" onload="this.media='screen'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-butterfly-clock/lib/clock.min.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">26</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/words/"><i class="fa-fw fa fa-language"></i><span> 算法</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fa fa-comment"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://tva1.sinaimg.cn/large/008i3skNly1gtkanombmnj60k00g676i02.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Jerry Mu的客栈</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/words/"><i class="fa-fw fa fa-language"></i><span> 算法</span></a></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fa fa-comment"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">CSAPP学习笔记(1)：计算机系统漫游</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-08-17T17:19:19.000Z" title="发表于 2021-08-18 01:19:19">2021-08-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-08-17T17:19:19.000Z" title="更新于 2021-08-18 01:19:19">2021-08-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CSAPP/">CSAPP</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">6.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>18分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="CSAPP学习笔记(1)：计算机系统漫游"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>计算机系统是由硬件和系统软件组成的，它们共同工作来运行应用程序。</p>
+<p>我们通过跟踪hello程序的生命周期——创建、运行、输出、终止，来开始对系统的学习。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;hello, world\n&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-信息就是位-上下文">1. 信息就是位+上下文</h3>
+<p>hello程序的源文件hello.c实际上以0和1组成的位序列存储在文件中。大部分的现代计算机系统都使用ASCII码来表示文本字符，实际上就是用一个唯一的单字节大小的整数值来表示每个字符。ASCII文本表示如下：</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNgy1gtk0vhjpyrj60s809uwg102.jpg" alt="image-20210817194345069" style="zoom:67%;" />
+<p>hello.c文件的表示方法说明了一个<strong>基本思想</strong>：系统中的所有信息都是由一串比特表示的，区分不同数据类型的唯一方法是我们读到这些数据对象时的上下文。</p>
+<h3 id="2-程序被其他程序翻译成不同格式">2. 程序被其他程序翻译成不同格式</h3>
+<p>上一步编写的源文件是人类能读懂的<strong>高级语言</strong>文件，需要被其他程序转化为一些列的<strong>低级机器指令</strong>。将这些指令按照一种称为<strong>可执行目标程序的格式</strong>打好包，并以二进制磁盘文件的形式存放起来。</p>
+<p>在Unix系统中的，转化由编译器驱动完成，GCC编译器驱动程序读取源文件hello.c，并把它翻译成一个可执行目标文件hello。指令为：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gcc -o hello hello.c</span><br></pre></td></tr></table></figure>
+<p>转化的过程分为四个阶段，执行这四个阶段的程序一起构成了编译系统：</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtk990htj7j60sq04o74x02.jpg" alt="image-20210818003331597" style="zoom:67%;" />
+<ul>
+<li>
+<p>预处理阶段：预处理器根据字符#开头的命令，直接修改原始的C程序，通常以.i作为文件的扩展名。</p>
+</li>
+<li>
+<p>编译阶段：编译器将文本文件hello.i翻译为文本文件hello.s，它包含一个汇编语言程序。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">main:</span><br><span class="line">	subq	$8,%rsp</span><br><span class="line">	movl	$.LCO,%edi</span><br><span class="line">	call	puts</span><br><span class="line">	movl	$0,%eax</span><br><span class="line">	addq	$8,%rsp</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>汇编阶段：汇编器将hello.s翻译成机器语言指令，把这些指令打包成一种叫做可重定位目标程序的格式，并将结果保存在hello.o二进制文件中。</p>
+</li>
+<li>
+<p>链接阶段：链接器负责合并有效的单独预编译好的目标文件，得到一个可执行目标文件hello文件，可被加载到内存中并由系统执行。</p>
+</li>
+</ul>
+<h3 id="3-了解编译系统如何工作是大有益处的">3. 了解编译系统如何工作是大有益处的</h3>
+<ul>
+<li>优化程序性能。</li>
+<li>理解链接时出现的错误。</li>
+<li>避免安全漏洞。</li>
+</ul>
+<h3 id="4-处理器读并解释储存在内存中的指令">4. 处理器读并解释储存在内存中的指令</h3>
+<p>此时要想在Unix系统上运行可执行目标文件hello，我们将它的文件名输入到称为shell的应用程序中：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">linux&gt;</span><span class="bash"> ./hello</span></span><br><span class="line">hello, world</span><br><span class="line"><span class="meta">linux&gt;</span></span><br></pre></td></tr></table></figure>
+<p>shell是一个命令行解释器，它输出一个提示符，等待输入一个命令行，然后执行这个命令。如果该命令行的第一个单词不是一个内置的shell命令，那么shell就会假设这是一个可执行文件的名字，它将加载并运行这个文件。所以在此例中，shell将加载并运行hello程序，然后等待程序终止。hello程序在屏幕上输出它的消息，然后终止。shell随后输出一个提示符，等待下一个输入的命令行。</p>
+<h4 id="1-系统的硬件组成">1. 系统的硬件组成</h4>
+<ol>
+<li>
+<p><strong>总线</strong>：贯穿整个系统的是一组电子管道，称作总线，它携带信息字节并负责在各个部件间传递。通常总线被设计成传送定长的字节块，也就是字(word)。字中的字节数(即<strong>字长</strong>)是一个基本的系统参数，各个系统中都不尽相同。现在的大多数机器字长要么是4个字节(32位)，要么是8个字节(64位)。</p>
+</li>
+<li>
+<p><strong>I/O设备</strong>：I/O(输人/输出)设备是系统与外部世界的联系通道。我们的示例系统包括四个I/O设备：作为用户输人的键盘和鼠标，作为用户输出的显示器，以及用于长期存储数据和程序的磁盘驱动器(简单地说就是磁盘)。最开始，可执行程序hello就存放在磁盘上。<br>
+每个I/O设备都通过一个<strong>控制器</strong>或<strong>适配器</strong>与<strong>I/O总线</strong>相连。控制器和适配器之间的区别主要在于它们的封装方式。控制器是I/O设备本身或者系统的主印制电路板(通常称作主板)上的芯片组。而适配器则是一块插在主板插槽上的卡。无论如何，它们的功能都是在I/O总线和I/O设备之间传递信息。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtkaav2l0cj60po0iqtaj02.jpg" alt="image-20210818010959063" style="zoom:67%;" />
+</li>
+<li>
+<p><strong>主存</strong>：主存是一个<strong>临时存储设备</strong>，在处理器执行程序时，用来存放程序和程序处理的数据。从物理上来说，主存是由一组<strong>动态随机存取存储器</strong>(DRAM)芯片组成的。从逻辑上来说，存储器是一个线性的字节数组，每个字节都有其<strong>唯一的地址</strong>(数组索引)，这些地址是从零开始的。一般来说，组成程序的每条机器指令都由不同数量的字节构成。与C程序变量相对应的数据项的大小是根据类型变化的。比如，在运行Linux的x86-64机器上，short类型的数据需要2个字节，int和float类型需要4个字节，而long和double类型需要8个字节。</p>
+</li>
+<li>
+<p><strong>处理器</strong>：中央处理单元(CPU)，简称处理器，是解释(或执行)存储在<strong>主存</strong>中指令的引擎。处理器的核心是一个大小为一个字的存储设备(或寄存器)，称为<strong>程序计数器</strong>(PC)。在任何时刻，PC都指向主存中的某条机器语言指令(即含有该条指令的地址)。</p>
+<p>从系统通电开始，直到系统断电，<strong>处理器一直在不断地执行程序计数器指向的指令</strong>，再更新程序计数器，使其指向下一条指令。处理器看上去是按照一个非常简单的指令执行模型来操作的，这个模型是由指令集架构决定的。在这个模型中，指令按照严格的顺序执行，而执行一条指令包含执行一系列的步骤。处理器从程序计数器指向的内存处读取指令，解释指令中的位，执行该指令指示的简单操作，然后更新PC，使其指向下一条指令，而这条指令并不一定和内存中刚刚执行的指令相邻。</p>
+<p>这样的简单操作并不多，它们围绕着<strong>主存</strong>、<strong>寄存器文件</strong>(register file)和<strong>算术/逻辑单元</strong>(ALU)进行。寄存器文件是一个小的存储设备，由一些单个字长的寄存器组成，每个寄存器都有唯一的名字。ALU计算新的数据和地址值。下面是一些简单操作的例子，CPU在指令的要求下可能会执行这些操作。</p>
+<ul>
+<li><strong>加载</strong>：从主存复制一个字节或者一个字到寄存器，以覆盖寄存器原来的内容。</li>
+<li><strong>存储</strong>：从寄存器复制一个字节或者一个字到主存的某个位置，以覆盖这个位置上原来的内容。</li>
+<li><strong>操作</strong>：把两个寄存器的内容复制到ALU，ALU对这两个字做算术运算，并将结果存放到一个寄存器中，以覆盖该寄存器中原来的内容。</li>
+<li><strong>跳转</strong>：从指令本身中抽取一个字，并将这个字复制到程序计数器(PC)中，以覆盖PC中原来的值。</li>
+</ul>
+<p>处理器看上去是它的指令集架构的简单实现，但是实际上现代处理器使用了非常复杂的机制来加速程序的执行。因此，我们将处理器的指令集架构和处理器的微体系结构区分开来：<strong>指令集架构</strong>描述的是每条机器代码指令的效果；而<strong>微体系结构</strong>描述的是处理器实际上是如何实现的。</p>
+</li>
+</ol>
+<h4 id="2-运行hello程序">2. 运行hello程序</h4>
+<p>初始时，shell 程序执行它的指令，等待我们输人一个命令。当我们在键盘上输入字符串“./hello” 后，shell程序将字符逐一读入寄存器，再把它存放到内存中，如图所示。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtlg00wktbj60os0gidhk02.jpg" alt="image-20210819010234867" style="zoom:67%;" />
+<p>当我们在键盘上敲回车键时，shell 程序就知道我们已经结束了命令的输人。然后shell执行一系列指令来加载可执行的hello文件，这些指令将hello目标文件中的代码和数据从磁盘复制到主存。数据包括最终会被输出的字符串“hello, world\n”。<br>
+利用直接存储器存取(DMA)技术，数据可以不通过处理器而直接从磁盘到达主存。这个步骤如图所示。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNgy1gtlfroh78kj60se0h8q4w02.jpg" alt="image-20210819010441586" style="zoom:67%;" />
+<p>一旦目标文件hello中的代码和数据被加载到主存，处理器就开始执行hello程序的main程序中的机器语言指令。这些指令将“hello, world\n”字符串中的字节从主存复制到寄存器文件，再从寄存器文件中复制到显示设备，最终显示在屏幕上。这个步骤如图所示。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNgy1gtlftzdrkpj60r00gk40i02.jpg" alt="image-20210819010652672" style="zoom:67%;" />
+<h3 id="5-高速缓存至关重要">5. 高速缓存至关重要</h3>
+<p>这个简单的示例揭示了一个重要的问题，即系统花费了大量的时间把信息从一个地方挪到另一个地方。hello 程序的机器指令最初是存放在磁盘上，当程序加载时，它们被复制到主存；当处理器运行程序时，指令又从主存复制到处理器。相似地，数据串“hello, world/n” 开始时在磁盘上，然后被复制到主存，最后从主存上复制到显示设备。从程序员的角度来看，这些复制就是开销，减慢了程序“真正”的工作。因此，系统设计者的一个主要目标就是使这些复制操作尽可能快地完成。<br>
+根据机械原理，<strong>较大的存储设备要比较小的存储设备运行得慢</strong>，而快速设备的造价远高于同类的低速设备。比如说，一个典型系统上的磁盘驱动器可能比主存大1000倍，但是对处理器而言，从磁盘驱动器上读取一个字的时间开销要比从主存中读取的开销大1000万倍。<br>
+类似地，一个典型的寄存器文件只存储几百字节的信息，而主存里可存放几十亿字节。然而，处理器从寄存器文件中读数据比从主存中读取几乎要快100倍。更麻烦的是，随着这些年半导体技术的进步，这种<strong>处理器与主存之间的差距</strong>还在持续增大。加快处理器的运行速度比加快主存的运行速度要容易和便宜得多。<br>
+针对这种处理器与主存之间的差异，系统设计者采用了更小更快的存储设备，称为<strong>高速缓存存储器</strong>(cache memory,简称为cache或高速缓存)，作为暂时的集结区域，存放处理器近期可能会需要的信息。下图展示了一个典型系统中的高速缓存存储器。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtmeu8szkpj60og09at9j02.jpg" alt="image-20210819211802165" style="zoom:67%;" />
+<p>位于处理器芯片上的<strong>L1高速缓存</strong>的容量可以达到数万字节，访问速度几乎和访问寄存器文件一样快。一个容量为数十万到数百万字节的更大的<strong>L2高速缓存</strong>通过一条特殊的总线连接到处理器。进程访问L2高速缓存的时间要比访问L1高速缓存的时间长5倍，但是这仍然比访问主存的时间快5~10倍。L1和L2高速缓存是用一种叫做<strong>静态随机访问存储器</strong>(SRAM)的硬件技术实现的。比较新的、处理能力更强大的系统甚至有三级高速缓存: L1、L2和<br>
+L3。系统可以获得一个很大的存储器，同时访问速度也很快，原因是利用了高速缓存的局部性原理，即程序具有访问局部区域里的数据和代码的趋势。通过让高速缓存里存放可能经常访问的数据，大部分的内存操作都能在快速的高速缓存中完成。</p>
+<h3 id="6-存储设备形成层次结构">6. 存储设备形成层次结构</h3>
+<p>在处理器和一个较大较慢的设备（如主存）之间插入一个更小更快的存储设备（例如高速缓存）的想法已经成为一个普遍的观念。实际上，每个计算机系统中的存储设备都被组织成了一个<strong>存储器层次结构</strong>，如图所示。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtn04s2l9nj60u00hg41002.jpg" alt="image-20210820093449729" style="zoom:67%;" />
+<p>构中位于最顶部，也就是第0级或记为L0。这里我们展示的是三层高速缓存L1到L3，占据存储器层次结构的第1层到第3层。主存在第4层，以此类推。</p>
+<p>存储器层次结构的主要思想是上一层的存储器作为低一层存储器的高速缓存。因此，寄存器文件就是L1的高速缓存，L1是L2的高速缓存，L2是L3的高速缓存，L3是主存的高速缓存，而主存又是磁盘的高速缓存。在某些具有分布式文件系统的网络系统中，本地磁盘就是存储在其他系统中磁盘上的数据的高速缓存。<br>
+正如可以运用不同的高速缓存的知识来提高程序性能一样，程序员同样可以利用对整个存储器层次结构的理解来提高程序性能。</p>
+<h3 id="7-操作系统管理硬件">7. 操作系统管理硬件</h3>
+<p>让我们回到hello程序的例子。当shell加载和运行hello程序时，以及hello程序输出自己的消息时，shell 和hello程序都没有直接访问键盘、显示器、磁盘或者主存。取而代之的是，它们依靠<strong>操作系统</strong>提供的服务。我们可以把操作系统看成是应用程序和硬件之间插人的一层软件，如图 所示。所有应用程序对硬件的操作尝试都必须通过操作系统。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtn0y42l8lj60fw04gdg002.jpg" alt="image-20210820100302460" style="zoom:67%;" />
+<p>操作系统有两个<strong>基本功能</strong>：</p>
+<ol>
+<li>防止硬件被失控的应用程序滥用；</li>
+<li>向应用程序提供简单一致的机制来控制复杂而又通常大不相同的低级硬件设备。</li>
+</ol>
+<p>操作系统通过几个基本的抽象概念(<strong>进程</strong>、<strong>虚拟内存</strong>和<strong>文件</strong>)来实现这两个功能。如图所示，文件是对I/O设备的抽象表示，虚拟内存是对主存和磁盘1/0设备的抽象表示，进程则是对处理器、主存和I/O设备的抽象表示。我们将依次讨论每种抽象表示。</p>
+<h4 id="1-进程">1. 进程</h4>
+<p><strong>进程</strong>是操作系统对一个正在运行的程序的一种抽象。在一个系统上可以同时运行多个进程，而每个进程都好像在独占地使用硬件。而<strong>并发运行</strong>，则是说一个进程的指令和另一个进程的指令是<strong>交错执行</strong>的。在大多数系统中，需要运行的进程数是多于可以运行它们的CPU个数的。传统系统在一个时刻只能执行一个程序，而先进的多核处理器同时能够执行多个程序。无论是在单核还是多核系统中，一个CPU看上去都像是在并发地执行多个<br>
+进程，这是通过处理器在进程间切换来实现的。操作系统实现这种交错执行的机制称为<strong>上下文切换</strong>。为了简化讨论，我们只考虑包含一个CPU的单处理器系统的情况。</p>
+<p>操作系统保持跟踪进程运行所需的所有状态信息。这种状态，也就是<strong>上下文</strong>，包括许多信息，比如PC和寄存器文件的当前值，以及主存的内容。在任何一个时刻，单处理器系统都只能执行一个进程的代码。当操作系统决定要把控制权从当前进程转移到某个新进程时，就会进行<strong>上下文切换</strong>，即保存当前进程的上下文、恢复新进程的上下文，然后将控制权传递到新进程。新进程就会从它上次停止的地方开始。下图展示了示例hello程序运行场景的基本理念。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtn3othbi0j60oe092dgf02.jpg" alt="image-20210820113751474" style="zoom:67%;" />
+<p>示例场景中有两个并发的进程：shell进程和hello进程。最开始，只有shell进程在运行，即等待命令行上的输入。当我们让它运行hello程序时，shell 通过调用一个专门的函数，即<strong>系统调用</strong>，来执行我们的请求，系统调用会将控制权传递给操作系统。操作系统保存shell进程的上下文，创建一个新的hello进程及其上下文，然后将控制权传给新的hello进程。hello 进程终止后，操作系统恢复shell进程的上下文，并将控制权传回给它，shell 进程会继续等待下一个命令行输人。<br>
+从一个进程到另一个进程的转换是由操作系统<strong>内核</strong>(kernel)管理的。内核是操作系统代码常驻主存的部分。当应用程序需要操作系统的某些操作时，比如读写文件，它就执行一条特殊的<strong>系统调用</strong>(system call)指令，将控制权传递给内核。然后内核执行被请求的操作并返回应用程序。注意，内核不是一个独立的进程。相反，它是系统管理全部进程所用代码和数据结构的集合。</p>
+<h4 id="2-线程">2. 线程</h4>
+<p>尽管通常我们认为一个进程只有单一的控制流，但是在现代系统中，<strong>一个进程实际上可以由多个称为线程的执行单元组成</strong>，每个线程都运行在进程的上下文中，并<strong>共享同样的代码和全局数据</strong>。由于网络服务器中对并行处理的需求，线程成为越来越重要的编程模型，因为多线程之间比多进程之间更容易共享数据，也因为线程一般来说都比进程更高效。当有多处理器可用的时候，多线程也是一种使得程序可以运行得更快的方法。</p>
+<h4 id="3-虚拟内存">3. 虚拟内存</h4>
+<p><strong>虚拟内存</strong>是一个抽象概念，它为每个进程提供了一个假象，即每个进程都在独占地使用主存。每个进程看到的内存都是一致的，称为<strong>虚拟地址空间</strong>。图示的是Linux进程的虚拟地址空间(其他Unix系统的设计也与此类似)。在Linux中，地址空间最上面的区域是保留给操作系统中的代码和数据的，这对所有进程来说都是一样。地址空间的底部区域存放用户进程定义的代码和数据。请注意，图中的地址是从下往上增大的。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtn43x4lcuj60js0hw40302.jpg" alt="image-20210820115222173" style="zoom:67%;" />
+<ul>
+<li><strong>程序代码和数据</strong>。对所有的进程来说，代码是从同一固定地址开始，紧接着的是和C全局变量相对应的数据位置。代码和数据区是直接按照可执行目标文件的内容初始化。</li>
+<li><strong>堆</strong>。代码和数据区后紧随着的是<strong>运行时堆</strong>。代码和数据区在进程一开始运行时就被指定了大小，与此不同，当调用像malloc和free这样的C标准库函数时，堆可以在运行时<strong>动态地扩展和收缩</strong>。</li>
+<li><strong>共享库</strong>。大约在地址空间的中间部分是一块用来存放像C标准库和数学库这样的共享库的代码和数据的区域。共享库的概念非常强大，也相当难懂。</li>
+<li><strong>栈</strong>。位于用户虚拟地址空间顶部的是用户栈，编译器用它来实现函数调用。和堆一样，用户栈在程序执行期间可以动态地扩展和收缩。特别地，每次我们调用一个函数时，栈就会增长；从一个函数返回时，栈就会收缩。</li>
+<li><strong>内核虚拟内存</strong>。地址空间顶部的区域是为内核保留的。不允许应用程序读写这个区域的内容或者直接调用内核代码定义的函数。相反，它们必须调用内核来执行这些操作。</li>
+</ul>
+<p>虚拟内存的运作需要硬件和操作系统软件之间精密复杂的交互，包括对处理器生成的每个地址的硬件翻译。基本思想是把一个进程虚拟内存的内容存储在磁盘上，然后用主存作为磁盘的高速缓存。</p>
+<h4 id="4-文件">4. 文件</h4>
+<p>文件就是字节序列，仅此而已。每个I/O设备，包括磁盘、键盘、显示器，甚至网络，都可以看成是文件。系统中的所有输人输出都是通过使用一小组称为Unix I/O的系统函数调用读写文件来实现的。<br>
+文件这个简单而精致的概念是非常强大的，因为它向应用程序提供了一个统一的视图，来看待系统中可能含有的所有各式各样的I/O设备。例如，处理磁盘文件内容的应用程序员可以非常幸福，因为他们无须了解具体的磁盘技术。进一步说，同一个程序可以在使用不同磁盘技术的不同系统上运行。</p>
+<h3 id="8-系统之间利用网络通信">8. 系统之间利用网络通信</h3>
+<p>系统漫游至此，我们一直是把系统视为一个孤立的硬件和软件的集合体。实际上，现代系统经常通过网络和其他系统连接到一起。从一个单独的系统来看，网络可视为一个I/O设备，如图所示。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtn562omb7j60mg0hcdhc02.jpg" alt="image-20210820122853743" style="zoom:67%;" />
+<p>当系统从主存复制一串字节到网络适配器时，数据流经过网络到达另一台机器，而不是比如说到达本地磁盘驱动器。相似地，系统可以读取从其他机器发送来的数据，并把数据复制到自己的主存。</p>
+<p>随着Internet这样的全球网络的出现，从一台主机复制信息到另外一台主机已经成为；计算机系统最重要的用途之一。比如，像电子邮件、即时通信、万维网、FTP和telnet 这样的应用都是基于网络复制信息的功能。<br>
+回到hello示例，我们可以使用熟悉的telnet 应用在一个远程主机上运行hello程序。假设用本地主机上的telnet 客户端连接远程主机上的telnet 服务器。在我们登录到远程主机并运行shell后，远端的shell就在等待接收输人命令。此后在远端运行he1lo程序包括如图所示的五个基本步骤。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gtn587jbncj60wy07umyg02.jpg" alt="image-20210820123106449" style="zoom:67%;" />
+<p>当我们在telnet 客户端键入“hello” 字符串并敲下回车键后，客户端软件就会将这个字符串发送到telnet的服务器。telnet 服务器从网络上接收到这个字符串后，会把它传递给远端shell程序。接下来，远端shell 运行hello程序，并将输出行返回给telnet 服务器。最后，telnet服务器通过网络把输出串转发给telnet客户端，客户端就将输出串输出到我们的本地终端上。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Jerry Mu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://mulinjie.top/2021/08/18/CSAPP/CSAPP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/">http://mulinjie.top/2021/08/18/CSAPP/CSAPP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E6%BC%AB%E6%B8%B8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://mulinjie.top" target="_blank">Jerry Mu的客栈</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CSAPP/">CSAPP</a><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">计算机系统</a></div><div class="post_share"><div class="social-share" data-image="https://tva1.sinaimg.cn/large/008i3skNly1gtkanombmnj60k00g676i02.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button button--animated"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="Wechat"/></a><div class="post-qr-code-desc">Wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="Alipay"/></a><div class="post-qr-code-desc">Alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/08/15/python/python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%87%BD%E6%95%B0/"><img class="prev-cover" src="https://tva1.sinaimg.cn/large/008i3skNly1gtht57x29bj60hs0m83zy02.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">python学习笔记：函数</div></div></a></div><div class="next-post pull-right"><a href="/2021/08/25/Python%E7%88%AC%E8%99%AB/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/"><img class="next-cover" src="https://tva1.sinaimg.cn/large/008i3skNly1gtszwng3n7j60ht0q0af502.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Python爬虫学习笔记(七)：数据存储</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="cols"><div class="col"><div class="container"><div class="front avatarPanel"><div class="inner"><div class="player-title">Attributes</div><div class="player-avatar"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div></div></div><div class="back attributesPanel"><div class="inner"><div class="player-lv">LV.4</div><div class="player-name">Jerry Mu</div><div class="attributes-value"><div class="attributes-value-item"><a href="/archives/"><div class="attributes">文章</div><div class="value-bar"><div class="value-bar-fill" style="width:35.00%"><div class="value-bar-fill-in" style="background: rgba(89, 230, 54,0.6)"></div></div></div><span>35/100</span></a></div><div class="attributes-value-item"><a href="/tags/"><div class="attributes">标签</div><div class="value-bar"><div class="value-bar-fill" style="width:26.00%"><div class="value-bar-fill-in" style="background: rgba(224, 20, 20, 0.6)"></div></div></div><span>26/100</span></a></div><div class="attributes-value-item"><a href="/categories/"><div class="attributes">分类</div><div class="value-bar"><div class="value-bar-fill" style="width:12.00%"><div class="value-bar-fill-in" style="background: rgba(30, 97, 226, 0.6)"></div></div></div><span>12/100</span></a></div></div></div></div></div></div><div class="col"><div class="container"><div class="front descriptionPanel"><div class="inner"><div class="player_description">我总是躲在梦与季节的深处，<br>听花与黑夜唱尽梦魇，<br>唱尽繁华，<br>唱断所有记忆的来路。</div><div class="play-bottom"></div></div></div><div class="back buttonPanel"><div class="inner"><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="http://wpa.qq.com/msgrd?v=3&amp;uin=1606710492&amp;site=qq&amp;menu=yes"><i class="fab fa-qq"></i><span>联系我</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/linjiemu" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:lj.mu@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="http://wpa.qq.com/msgrd?v=3&amp;uin=1606710492&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="https://space.bilibili.com/483268488" target="_blank" title="Bilibili"><i class="fas fa-tv"></i></a><a class="social-icon" href="https://www.zhihu.com/people/zhuan-zhu-de-hai-yu" target="_blank" title="Zhihu"><i class="fab fa-zhihu"></i></a></div><div class="play-bottom"></div></div></div></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BF%A1%E6%81%AF%E5%B0%B1%E6%98%AF%E4%BD%8D-%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">1. 信息就是位+上下文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A8%8B%E5%BA%8F%E8%A2%AB%E5%85%B6%E4%BB%96%E7%A8%8B%E5%BA%8F%E7%BF%BB%E8%AF%91%E6%88%90%E4%B8%8D%E5%90%8C%E6%A0%BC%E5%BC%8F"><span class="toc-text">2. 程序被其他程序翻译成不同格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%BA%86%E8%A7%A3%E7%BC%96%E8%AF%91%E7%B3%BB%E7%BB%9F%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E6%98%AF%E5%A4%A7%E6%9C%89%E7%9B%8A%E5%A4%84%E7%9A%84"><span class="toc-text">3. 了解编译系统如何工作是大有益处的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%A4%84%E7%90%86%E5%99%A8%E8%AF%BB%E5%B9%B6%E8%A7%A3%E9%87%8A%E5%82%A8%E5%AD%98%E5%9C%A8%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E6%8C%87%E4%BB%A4"><span class="toc-text">4. 处理器读并解释储存在内存中的指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%A1%AC%E4%BB%B6%E7%BB%84%E6%88%90"><span class="toc-text">1. 系统的硬件组成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E8%BF%90%E8%A1%8Chello%E7%A8%8B%E5%BA%8F"><span class="toc-text">2. 运行hello程序</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E9%AB%98%E9%80%9F%E7%BC%93%E5%AD%98%E8%87%B3%E5%85%B3%E9%87%8D%E8%A6%81"><span class="toc-text">5. 高速缓存至关重要</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%AD%98%E5%82%A8%E8%AE%BE%E5%A4%87%E5%BD%A2%E6%88%90%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84"><span class="toc-text">6. 存储设备形成层次结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86%E7%A1%AC%E4%BB%B6"><span class="toc-text">7. 操作系统管理硬件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%BF%9B%E7%A8%8B"><span class="toc-text">1. 进程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%BA%BF%E7%A8%8B"><span class="toc-text">2. 线程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98"><span class="toc-text">3. 虚拟内存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E6%96%87%E4%BB%B6"><span class="toc-text">4. 文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E7%B3%BB%E7%BB%9F%E4%B9%8B%E9%97%B4%E5%88%A9%E7%94%A8%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1"><span class="toc-text">8. 系统之间利用网络通信</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2021/11/22/Vue/Vue_01/" title="Vue框架入门(一)"><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwo2jrqshuj30rs0rs776.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Vue框架入门(一)"/></a><div class="content"><a class="title" href="/2021/11/22/Vue/Vue_01/" title="Vue框架入门(一)">Vue框架入门(一)</a><time datetime="2021-11-22T09:33:33.000Z" title="发表于 2021-11-22 17:33:33">2021-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/09/Operating_System/main_memory/" title="Operating System：Main Memory"><img src="https://tva1.sinaimg.cn/large/008i3skNly1guhgkz9m7qj60rs144jxv02.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Operating System：Main Memory"/></a><div class="content"><a class="title" href="/2021/11/09/Operating_System/main_memory/" title="Operating System：Main Memory">Operating System：Main Memory</a><time datetime="2021-11-09T09:46:48.000Z" title="发表于 2021-11-09 17:46:48">2021-11-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/11/01/%E8%AE%A1%E7%BB%84/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%AD%98%E5%82%A8%E5%99%A8%EF%BC%88%E7%BB%AD%EF%BC%89/" title="计算机组成原理学习笔记：存储器（续）"><img src="https://tva1.sinaimg.cn/large/008i3skNly1gv5kpt8rktj60qo0f0wg602.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="计算机组成原理学习笔记：存储器（续）"/></a><div class="content"><a class="title" href="/2021/11/01/%E8%AE%A1%E7%BB%84/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%AD%98%E5%82%A8%E5%99%A8%EF%BC%88%E7%BB%AD%EF%BC%89/" title="计算机组成原理学习笔记：存储器（续）">计算机组成原理学习笔记：存储器（续）</a><time datetime="2021-11-01T09:49:05.000Z" title="发表于 2021-11-01 17:49:05">2021-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91/" title="计算机网络学习笔记：局域网"><img src="https://tva1.sinaimg.cn/large/008i3skNly1gvvd70gyzsj30do06rq3k.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="计算机网络学习笔记：局域网"/></a><div class="content"><a class="title" href="/2021/10/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91/" title="计算机网络学习笔记：局域网">计算机网络学习笔记：局域网</a><time datetime="2021-10-28T13:50:09.000Z" title="发表于 2021-10-28 21:50:09">2021-10-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/10/06/%E8%AE%A1%E7%BB%84/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%AD%98%E5%82%A8%E5%99%A8/" title="计算机组成原理学习笔记：存储器"><img src="https://tva1.sinaimg.cn/large/008i3skNly1gv5kpt8rktj60qo0f0wg602.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="计算机组成原理学习笔记：存储器"/></a><div class="content"><a class="title" href="/2021/10/06/%E8%AE%A1%E7%BB%84/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%AD%98%E5%82%A8%E5%99%A8/" title="计算机组成原理学习笔记：存储器">计算机组成原理学习笔记：存储器</a><time datetime="2021-10-06T06:15:39.000Z" title="发表于 2021-10-06 14:15:39">2021-10-06</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://tva1.sinaimg.cn/large/008i3skNly1gtkanombmnj60k00g676i02.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2021 By Jerry Mu</div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn"><span>陕ICP备2021006299号 </span></a></div><p id="ghbdages"><a class="github-badge" target="_blank" href="https://hexo.io/" style="margin-inline:5px"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&amp;logo=hexo"/></a><a class="github-badge" target="_blank" href="https://butterfly.js.org/" style="margin-inline:5px"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&amp;logo=bitdefender"/></a><a class="github-badge" target="_blank" href="https://www.jsdelivr.com/" style="margin-inline:5px"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&amp;logo=jsDelivr"/></a><a class="github-badge" target="_blank" href="https://vercel.com/" style="margin-inline:5px"><img src="https://img.shields.io/badge/Hosted-Vercel-brightgreen?style=flat&amp;logo=Vercel"/></a><a class="github-badge" target="_blank" href="https://vercel.com/" style="margin-inline:5px"><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&amp;logo=Codio"/></a><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub"/></a><a class="github-badge" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" style="margin-inline:5px"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&amp;logo=Claris"/></a></p><div id="workboard"></div><script async="async" src="/js/runtime.js"></script></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font-plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font-minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="chat_btn" type="button" title="rightside.chat_btn"><i class="fas fa-sms"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>if (document.getElementsByClassName('mermaid').length) {
+  if (window.mermaidJsLoad) mermaid.init()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(() => {
+      window.mermaidJsLoad = true
+      mermaid.initialize({
+        theme: 'default',
+      })
+      false && mermaid.init()
+    })
+  }
+}</script><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'UAmARtocgDxNIvBuDTL5urua-MdYXbMMI',
+      appKey: 'iiWgKgYo9F9Sn4Vaj30d3L8M',
+      placeholder: '请输入你的QQ账号，系统会自动读取QQ头像和QQ邮箱！ \n收到任何人的回复我都会在第一时间联系你的QQ邮箱！\n请规范你的言行,这里是中国大陆！系统会记录你的IP,任何违反当地法规的言论都将受到法律的制裁!',
+      avatar: 'monsterid',
+      meta: 'nick,mail,link'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: true,
+      serverURLs: '',
+      emojiCDN: 'https://img.t.sinajs.cn/t4/appstyle/expression/ext/normal/',
+      emojiMaps: "",
+      enableQQ: true,
+      path: window.location.pathname,
+      master: 'eb89a9e39b6490c4f6cb9edd4ef36cec'.split(','),
+      friends: '79eda3548c22938c162668471a9a696c,4d6a75ca6eb0d1e4e1b6b087006b49fe,c2970f0c5763af65d159953a5bd7494d'.split(','),
+      tagMeta: '站主,特邀嘉宾,旅行者'.split(','),
+      requiredFields: ["nick,mail"],
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script async src="/js/diytitle.js"></script><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-ribbon.min.js" size="50" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+                        function butterfly_swiper_injector_config(){
+                          var parent_div_git = document.getElementById('recent-posts');
+                          var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/09/23/计组/计算机组成原理学习笔记：指令系统/" alt=""><img width="48" height="48" src="https://tva1.sinaimg.cn/large/008i3skNly1guqqie9wbgj60hs0g10tw02.jpg" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-09-23</span><a class="blog-slider__title" href="2021/09/23/计组/计算机组成原理学习笔记：指令系统/" alt="">计算机组成原理学习笔记：指令系统</a><div class="blog-slider__text">点击查看详情...</div><a class="blog-slider__button" href="2021/09/23/计组/计算机组成原理学习笔记：指令系统/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/09/15/计算机网络/计算机网络学习笔记：概述/" alt=""><img width="48" height="48" src="https://tva1.sinaimg.cn/large/008i3skNly1guhewx6x0ij60lc0lct9v02.jpg" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-09-15</span><a class="blog-slider__title" href="2021/09/15/计算机网络/计算机网络学习笔记：概述/" alt="">计算机网络学习笔记：概述</a><div class="blog-slider__text">点击查看详情...</div><a class="blog-slider__button" href="2021/09/15/计算机网络/计算机网络学习笔记：概述/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/11/09/Operating_System/main_memory/" alt=""><img width="48" height="48" src="https://tva1.sinaimg.cn/large/008i3skNly1guhgkz9m7qj60rs144jxv02.jpg" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-11-09</span><a class="blog-slider__title" href="2021/11/09/Operating_System/main_memory/" alt="">Operating System：Main Memory</a><div class="blog-slider__text">An operating system acts as an intermediary between the user of a computer and the computer hardware. The purpose of an operating system is to provide an environment in which a user can execute programs in a convenient and efficient manner.</div><a class="blog-slider__button" href="2021/11/09/Operating_System/main_memory/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/09/13/ML/机器学习学习笔记：模型评估与选择/" alt=""><img width="48" height="48" src="https://tva1.sinaimg.cn/large/008i3skNly1guf4siq327j60u00u0djw02.jpg" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-09-13</span><a class="blog-slider__title" href="2021/09/13/ML/机器学习学习笔记：模型评估与选择/" alt="">机器学习学习笔记：模型评估与选择</a><div class="blog-slider__text">点击查看详情...</div><a class="blog-slider__button" href="2021/09/13/ML/机器学习学习笔记：模型评估与选择/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/08/18/CSAPP/CSAPP学习笔记(1)：计算机系统漫游/" alt=""><img width="48" height="48" src="https://tva1.sinaimg.cn/large/008i3skNly1gtkanombmnj60k00g676i02.jpg" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-08-18</span><a class="blog-slider__title" href="2021/08/18/CSAPP/CSAPP学习笔记(1)：计算机系统漫游/" alt="">CSAPP学习笔记(1)：计算机系统漫游</a><div class="blog-slider__text">计算机系统是由硬件和系统软件组成的，它们共同工作来运行应用程序。我们通过跟踪hello程序的生命周期——创建、运行、输出、终止，来开始对系统的学习。</div><a class="blog-slider__button" href="2021/08/18/CSAPP/CSAPP学习笔记(1)：计算机系统漫游/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/07/09/日记/2021年7月9日/" alt=""><img width="48" height="48" src="https://tva1.sinaimg.cn/large/008i3skNly1gsb4jqwi6yj30u00u0nbc.jpg" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-07-09</span><a class="blog-slider__title" href="2021/07/09/日记/2021年7月9日/" alt="">2021年7月9日 周五 晴转多云</a><div class="blog-slider__text">再怎么看我也不知道怎么描述它的啦！</div><a class="blog-slider__button" href="2021/07/09/日记/2021年7月9日/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/08/15/python/python学习笔记：字典/" alt=""><img width="48" height="48" src="https://tva1.sinaimg.cn/large/008i3skNly1gthkye24eqj60hs0npach02.jpg" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-08-15</span><a class="blog-slider__title" href="2021/08/15/python/python学习笔记：字典/" alt="">python学习笔记：字典</a><div class="blog-slider__text">在本章中，你将学习能够将相关信息关联起来的Python字典。你 将学习如何访问和修改字典中的信息。鉴于字典可存储的信息量几乎 不受限制，因此我们会演示如何遍历字典中的数据。另外，你还将学 习存储字典的列表、存储列表的字典和存储字典的字典。</div><a class="blog-slider__button" href="2021/08/15/python/python学习笔记：字典/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/07/09/Java笔记/JAVA多线程/" alt=""><img width="48" height="48" src="/img/IMG_1433(20210709-231304).JPG" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-07-09</span><a class="blog-slider__title" href="2021/07/09/Java笔记/JAVA多线程/" alt="">Java学习笔记(六):JAVA多线程编程</a><div class="blog-slider__text">以前所编写的程序，每个程序都有一个入口、一个出口以及一个顺序执行的序列，在程序执行过程中的任何指定时刻，都只有一个单独的执行点。事实上，在单个程序内部是可以在同一时刻进行多种运算的，这就是所谓的多线程。</div><a class="blog-slider__button" href="2021/07/09/Java笔记/JAVA多线程/" alt="">详情   </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" href="2021/07/16/Python爬虫/requests库的使用/" alt=""><img width="48" height="48" src="https://tva1.sinaimg.cn/large/008i3skNly1gsnox0ed15j30u00u0grf.jpg" alt=""/></a><div class="blog-slider__content"><span class="blog-slider__code">2021-07-16</span><a class="blog-slider__title" href="2021/07/16/Python爬虫/requests库的使用/" alt="">Python爬虫学习笔记(三):requests库的使用</a><div class="blog-slider__text">相比于urllib库，requests库使用起来更加简单且强大。</div><a class="blog-slider__button" href="2021/07/16/Python爬虫/requests库的使用/" alt="">详情   </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+                          console.log('已挂载butterfly_swiper')
+                          // parent_div_git.innerHTML=item_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                          parent_div_git.insertAdjacentHTML("afterbegin",item_html) // 有报错，但不影响使用(支持pjax跳转)
+                          }
+                        if( document.getElementById('recent-posts') && (location.pathname ==='all'|| 'all' ==='all')){
+                        butterfly_swiper_injector_config()
+                        }
+                      </script><script defer src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.1.6/js/swiper.min.js"></script><script defer data-pjax src="https://cdn.jsdelivr.net/npm/hexo-butterfly-swiper/lib/swiper_init.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '2s');
+    arr[i].setAttribute('data-wow-delay', '100ms');
+    arr[i].setAttribute('data-wow-offset', '-120');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('article-sort-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '2s');
+    arr[i].setAttribute('data-wow-delay', '100ms');
+    arr[i].setAttribute('data-wow-offset', '-20');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('vcard');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '2s');
+    arr[i].setAttribute('data-wow-delay', '100ms');
+    arr[i].setAttribute('data-wow-offset', '-20');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script></div><script defer src="https://cdn.jsdelivr.net/gh/graingert/wow@1.3.0/dist/wow.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/hexo-butterfly-wowjs/lib/wow_init.min.js"></script><script data-pjax>
+  function butterfly_clock_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-clock/clock/images/weather/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_injector_config();
+  }
+  </script><script src="https://pv.sohu.com/cityjson?ie=utf-8"></script><script data-pjax src="https://cdn.jsdelivr.net/npm/hexo-butterfly-clock/lib/clock.min.js"></script><!-- hexo injector body_end end --></body></html>
